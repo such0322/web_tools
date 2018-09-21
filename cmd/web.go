@@ -82,6 +82,7 @@ func router(m *macaron.Macaron) {
 	m.Group("", func() {
 		m.Get("/order/list", OdinOrder.List)
 		m.Get("/order/replacement", OdinOrder.Replacement)
+		m.Post("/order/replacementProcess", OdinOrder.ReplacementProcess)
 	})
 
 	m.NotFound(routes.NotFound)

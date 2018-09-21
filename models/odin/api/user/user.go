@@ -23,6 +23,13 @@ type User struct {
 	is_payed        int
 }
 
+func LoadUserByGuid(guid string) *User {
+	muid := UserMuidPrefix + guid
+	var user User
+	DB.Where("muid = ?", muid).Find(&user)
+	return &user
+}
+
 func GetUsersByGuids(guids []string) []User {
 	var muids []string
 	for _, vo := range guids {

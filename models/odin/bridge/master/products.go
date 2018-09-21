@@ -4,7 +4,7 @@ import "time"
 
 type Product struct {
 	Model
-	ID               int
+	ID               int `gorm:"primary_key"`
 	Platform         string
 	AppId            string
 	Store            string
@@ -24,6 +24,12 @@ type Product struct {
 
 func (Product) TableName() string {
 	return "products"
+}
+
+func LoadProduct(id int) *Product {
+	var product Product
+	DB.First(&product, id)
+	return &product
 }
 
 func GetProducts() []Product {
