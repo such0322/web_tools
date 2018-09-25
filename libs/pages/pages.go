@@ -12,6 +12,7 @@ type Pages struct {
 	Page    int
 	PrePage int
 	Url     string
+	Params  map[string]interface{}
 }
 
 var pageTpl string = `
@@ -29,12 +30,18 @@ func (p *Pages) Get() template.HTML {
 	} else {
 		url = url + "?pager="
 	}
+	var pstr string
+	if len(p.Params) > 0 {
+		for key, value := range p.Params {
+			pstr += fmt.Sprintf("&%s=%v", key, value)
+		}
+	}
 	var previousActive, previousPage, nextActive, nextPage string
 	if p.Page-1 <= 0 {
 		previousActive = `class="disabled"`
 		previousPage = "javascript:void(0)"
 	} else {
-		previousPage = fmt.Sprintf(url+"%d", p.Page-1)
+		previousPage = fmt.Sprintf(url+"%d"+pstr, p.Page-1)
 	}
 	previous := fmt.Sprintf(`<li %s>
 		<a href="%s" aria-label="Previous">
@@ -45,7 +52,7 @@ func (p *Pages) Get() template.HTML {
 		nextActive = `class="disabled"`
 		nextPage = "javascript:void(0)"
 	} else {
-		nextPage = fmt.Sprintf(url+"%d", p.Page+1)
+		nextPage = fmt.Sprintf(url+"%d"+pstr, p.Page+1)
 	}
 
 	next := fmt.Sprintf(`<li %s>
@@ -61,7 +68,7 @@ func (p *Pages) Get() template.HTML {
 			active = `class="active"`
 		}
 		if i == 1 || i == pageCount || (p.Page-3 <= i && i <= p.Page+3) {
-			pages += fmt.Sprintf(`<li %s ><a href="`+url+`%d">%d</a></li>`, active, i, i)
+			pages += fmt.Sprintf(`<li %s ><a href="`+url+`%d`+pstr+`">%d</a></li>`, active, i, i)
 		} else if !pDotLi && i < p.Page-3 {
 			pDotLi = true
 			pages += `<li class="disabled"><a href="javascript:void(0)">...</a></li>`

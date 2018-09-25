@@ -55,18 +55,36 @@ func (order *PurchaseDeposit) LoadUser() *PurchaseDeposit {
 	return order
 }
 
-func GetOrderByPage(pager int) Orders {
+func GetOrderByPage(pager int, cid int) Orders {
 	var pds []PurchaseDeposit
 	offset := 0
 	if pager > 0 {
 		offset = (pager - 1) * ORDER_STEP
 	}
-	DB.Limit(ORDER_STEP).Offset(offset).Order("ins_date desc").Find(&pds)
+	db := DB.Limit(ORDER_STEP).Offset(offset).Order("ins_date desc")
+	if cid > 0 {
+		user := AA.LoadUserByCid(cid)
+		if user.Cid == 0 {
+			return pds
+		}
+		guid := strings.Split(user.Muid, ":")[1]
+		db = db.Where("guid = ?", guid)
+	}
+	db.Find(&pds)
 	return pds
 }
-func GetOrderCount() (count int) {
+func GetOrderCount(cid int) (count int) {
 	var pd PurchaseDeposit
-	DB.Model(&pd).Count(&count)
+	db := DB.Model(&pd)
+	if cid > 0 {
+		user := AA.LoadUserByCid(cid)
+		if user.Cid == 0 {
+			return 0
+		}
+		guid := strings.Split(user.Muid, ":")[1]
+		db = db.Where("guid = ?", guid)
+	}
+	db.Count(&count)
 	return count
 }
 

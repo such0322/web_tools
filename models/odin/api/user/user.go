@@ -26,7 +26,13 @@ type User struct {
 func LoadUserByGuid(guid string) *User {
 	muid := UserMuidPrefix + guid
 	var user User
-	DB.Where("muid = ?", muid).Find(&user)
+	DB.Where("muid = ?", muid).First(&user)
+	return &user
+}
+
+func LoadUserByCid(cid int) *User {
+	var user User
+	DB.Where("cid = ?", cid).First(&user)
 	return &user
 }
 

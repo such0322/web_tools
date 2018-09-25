@@ -63,15 +63,22 @@ func List(c *context.Context) {
 	if err != nil {
 		pager = 1
 	}
+	cid, _ := strconv.Atoi(c.Req.FormValue("cid"))
+
 	productList := BM.GetProductList()
-	orders := BMi.GetOrderByPage(pager)
+	orders := BMi.GetOrderByPage(pager, cid)
 	orders.LoadUserInfo()
-	count := BMi.GetOrderCount()
-	pages := &pages.Pages{Count: count, Page: pager, PrePage: BMi.ORDER_STEP, Url: "list"}
+	count := BMi.GetOrderCount(cid)
+	var pageParams = make(map[string]interface{})
+	if cid > 0 {
+		pageParams["cid"] = cid
+	}
+	pages := &pages.Pages{Count: count, Page: pager, PrePage: BMi.ORDER_STEP, Url: "list", Params: pageParams}
 	//获取最新的订单
 	c.Data["Title"] = "orderList"
 	c.Data["Orders"] = orders
 	c.Data["Pages"] = pages.Get()
 	c.Data["ProductList"] = productList
+	c.Data["Cid"] = cid
 	c.HTML(200, "odin/order/list")
 }
