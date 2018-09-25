@@ -6,7 +6,7 @@
 </div>
 <hr/>
 <div class="rows">
-    <form class="form-horizontal" method="post" action="/order/replacementProcess">
+    <div class="form-horizontal">
         <div class="form-group">
             <label class="col-sm-2 control-label">订单号</label>
             <div class="col-sm-4 form-control-static">
@@ -17,6 +17,12 @@
             <label class="col-sm-2 control-label">guid</label>
             <div class="col-sm-4 form-control-static">
             {{.Order.Guid}}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">cid</label>
+            <div class="col-sm-4 form-control-static">
+            {{.Order.User.Cid}}
             </div>
         </div>
         <div class="form-group">
@@ -41,6 +47,12 @@
             <label class="col-sm-2 control-label">商品ID</label>
             <div class="col-sm-4 form-control-static">
             {{.Order.ProductPrimaryId}}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">商品价格</label>
+            <div class="col-sm-4 form-control-static">
+            {{.Order.Product.Payment}}
             </div>
         </div>
         <div class="form-group">
@@ -73,6 +85,8 @@
             {{.Order.LastModDate.Format "2006-01-02 15:04:05"}}
             </div>
         </div>
+    </div>
+    <form class="form-horizontal" method="post" action="/order/replacementProcess" onsubmit="return checkForm()">
         <div class="form-group">
             <label class="col-sm-2 control-label">选择频道ID</label>
             <div class="col-sm-3">
@@ -97,4 +111,13 @@
     </form>
 
 </div>
+
+<script>
+    function checkForm() {
+        if (window.confirm("确认进行补单?")) {
+            return true;
+        }
+        return false;
+    }
+</script>
 {{ template "footer" . }}

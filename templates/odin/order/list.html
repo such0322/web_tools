@@ -15,29 +15,42 @@
                 <th>平台</th>
                 <th>状态</th>
                 <th>商品ID</th>
-                <th class="col-sm-1">商品</th>
+                <th>商品</th>
+                <th class="col-sm-1">价格</th>
                 <th>商品类型</th>
-                <th class="col-sm-1">时间</th>
-                <th class="col-sm-1">修改时间</th>
+                <th class="col-sm-1">订单时间</th>
                 <th>支付频道</th>
                 <th>操作</th>
             </tr>
         {{ range .Orders}}
-            {{$p := index $.ProductList .ProductPrimaryId }}
+        {{$p := index $.ProductList .ProductPrimaryId }}
             <tr>
-                <td><p style="width: 120px; overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{.DepositId}}</p></td>
+                <td>
+                    <p style="width: 120px; overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{.DepositId}}</p>
+                </td>
                 <td>{{.Guid}}</td>
                 <td>{{.User.Cid}}</td>
                 <td>{{.Platform}}</td>
-                <td>{{if eq .Status "init"}}初始{{else if eq .Status "finish"}}已完成{{else if eq .Status "item_added"}}已发货{{end}}</td>
+                <td>{{if eq .Status "init"}}
+                    初始{{else if eq .Status "finish"}}已完成{{else if eq .Status "item_added"}}已发货{{end}}</td>
                 <td>{{.ProductId}}</td>
                 <td>{{$p.Name}}</td>
+                <td>{{$p.Payment}}</td>
                 <td>{{$p.PurchaseType}}</td>
                 <td>{{.InsDate.Format "2006-01-02 15:04:05"}}</td>
-                <td>{{.LastModDate.Format "2006-01-02 15:04:05"}}</td>
                 <td>{{.ChannelId}}</td>
-                <td>{{if eq .Status "init"}}<a href="/order/replacement?deposit_id={{.DepositId}}" class="btn btn-danger">补单</a>
-                {{else}}<a href="/order?deposit_id={{.DepositId}}" class="btn btn-default">详情</a>{{end}}</td>
+                <td>
+                {{if eq .Status "init"}}
+                {{if eq $p.PurchaseType "normal"}}
+                    <a href="/order/replacement?deposit_id={{.DepositId}}" class="btn btn-danger">补单</a>
+                {{else}}
+                    <a href="javascript:void(0)" class="btn btn-danger" disabled="true" data-toggle="tooltip"
+                       data-placement="top" title="直购商品暂不可用">补单</a>
+                {{end}}
+                {{else}}
+                    <a href="/order?deposit_id={{.DepositId}}" class="btn btn-default">详情</a>
+                {{end}}
+                </td>
             </tr>
         {{end}}
         </table>
@@ -47,5 +60,9 @@
     </div>
 
 </div>
-</div>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
 {{ template "footer" . }}

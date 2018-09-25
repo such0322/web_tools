@@ -61,7 +61,7 @@ func GetOrderByPage(pager int) Orders {
 	if pager > 0 {
 		offset = (pager - 1) * ORDER_STEP
 	}
-	DB.Limit(ORDER_STEP).Offset(offset).Find(&pds)
+	DB.Limit(ORDER_STEP).Offset(offset).Order("ins_date desc").Find(&pds)
 	return pds
 }
 func GetOrderCount() (count int) {

@@ -47,7 +47,7 @@ func (m *DBManager) getDB(dbName string) *gorm.DB {
 
 func (m *DBManager) newEngine(dbName string) (db *gorm.DB, err error) {
 	dbCfg := dbCfgs[dbName]
-	connStr := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=true&loc=Local", dbCfg.User, dbCfg.Passwd, dbCfg.Host, dbCfg.Name)
+	connStr := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local", dbCfg.User, dbCfg.Passwd, dbCfg.Host, dbCfg.Name)
 	db, err = gorm.Open("mysql", connStr)
 	if err != nil {
 		fmt.Println(err)

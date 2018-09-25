@@ -1,9 +1,9 @@
 package order
 
 import (
-	"bytes"
-	"encoding/json"
+	"net/http"
 	"strconv"
+	"time"
 	"web_tools/libs/context"
 	"web_tools/libs/pages"
 	BM "web_tools/models/odin/bridge/master"
@@ -20,13 +20,13 @@ func Replacement(c *context.Context) {
 	c.HTML(200, "odin/order/replacement")
 }
 
-func JSONMarshal(t interface{}) ([]byte, error) {
-	buffer := &bytes.Buffer{}
-	encoder := json.NewEncoder(buffer)
-	encoder.SetEscapeHTML(false)
-	err := encoder.Encode(t)
-	return buffer.Bytes(), err
-}
+//func JSONMarshal(t interface{}) ([]byte, error) {
+//	buffer := &bytes.Buffer{}
+//	encoder := json.NewEncoder(buffer)
+//	encoder.SetEscapeHTML(false)
+//	err := encoder.Encode(t)
+//	return buffer.Bytes(), err
+//}
 
 func ReplacementProcess(c *context.Context) {
 	depositId := c.Req.FormValue("deposit_id")
@@ -42,15 +42,19 @@ func ReplacementProcess(c *context.Context) {
 	}
 	if !bool {
 		//	session.Flash{}
-		c.Redirect("/order/replacement?deposit_id="+depositId, 200)
+		c.Redirect("/order/replacement?deposit_id="+depositId, http.StatusFound)
 		return
 	}
 
 	//记录补单操作
 	tool.NewReplacementLog(order.DepositId, tool.DefaultOperator)
 	//向支付服务器请求补单
-	order.CallAPIReplacement(channelId)
+	go order.CallAPIReplacement(channelId)
 	//如果是直购商品，开启一个携程，每10秒对订单状态进行校验，finish进行补发商品
+
+	//等待API1秒，确认补单完成
+	time.Sleep(1 * time.Second)
+	c.Redirect("/order/list", http.StatusFound)
 
 }
 
